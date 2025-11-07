@@ -348,4 +348,4 @@ def example_workflow():
 if __name__ == "__main__":
     # For direct run: example_workflow()
     # In production replace example_workflow by orchestrated data loaders and configuration
-    print("LRM CV module loaded. Call example_workflow() to run a toy demo.")
+    print("LRM CV module loaded. Call example_workflow() to run a demo.")
