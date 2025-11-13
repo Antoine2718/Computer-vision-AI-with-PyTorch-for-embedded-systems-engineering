@@ -201,37 +201,37 @@ Only listing the primary public components — see source for exact signatures a
 ## Embedded deployment guidance
 
 This repo is a research/engineering starting point. For embedded deployment:
-	1.	Profile: measure latency and memory on target (Raspberry Pi, Jetson, microcontrollers with ML accelerators).
-	2.	Model selection: prefer MobileNetV3/EdgeTPU-friendly nets, EfficientNet-lite, or quantization-friendly ResNet variants. Use timm to select smaller backbones (e.g., mobilenetv3_small_100).
-	3.	Export:
-	•	Convert to TorchScript: torch.jit.trace or torch.jit.script.
-	•	OR export to ONNX: torch.onnx.export (ensure dynamic axes as necessary).
-	•	For NVIDIA Jetson/TensorRT: export ONNX -> TensorRT.
-	•	For microcontrollers / Coral Edge TPU: use TFLite conversion (requires re-export and possibly architecture changes).
-	4.	Quantize:
-	•	Post-Training Static Quantization (PTQ) or Quantization-Aware Training (QAT) to reach INT8 accuracy.
-	5.	Prune / Distill:
-	•	Apply structured pruning (filters/channels) for speed and memory gains.
-	•	Knowledge distillation: train a small “student” using large “teacher” predictions.
+1. Profile: measure latency and memory on target (Raspberry Pi, Jetson, microcontrollers with ML accelerators).
+2. Model selection: prefer MobileNetV3/EdgeTPU-friendly nets, EfficientNet-lite, or quantization-friendly ResNet variants. Use timm to select smaller backbones (e.g., mobilenetv3_small_100).
+3. Export:
+- Convert to TorchScript: torch.jit.trace or torch.jit.script.
+- OR export to ONNX: torch.onnx.export (ensure dynamic axes as necessary).
+- For NVIDIA Jetson/TensorRT: export ONNX -> TensorRT.
+- For microcontrollers / Coral Edge TPU: use TFLite conversion (requires re-export and possibly architecture changes).
+4. Quantize:
+- Post-Training Static Quantization (PTQ) or Quantization-Aware Training (QAT) to reach INT8 accuracy.
+5. Prune / Distill:
+- Apply structured pruning (filters/channels) for speed and memory gains.
+- Knowledge distillation: train a small “student” using large “teacher” predictions.
 
 ⸻
 
 ## Optimizations for embedded systems
-	•	Memory:
-	•	Reduce batch size to 1 for inference.
-	•	Use in-place ops (ReLU inplace=True) but check autograd compatibility.
-	•	Use torch.utils.checkpoint (gradient checkpointing) only during training to reduce memory.
-	•	Compute:
-	•	Replace nn.Conv2d with depthwise-separable convolutions.
-	•	Use grouped convolutions if appropriate.
-	•	Prefer lower-precision (FP16/INT8) arithmetic on supported hardware.
-	•	IO and pre/post processing:
-	•	Move image preprocessing into C++/hardware acceleration when possible.
-	•	Use fused kernels for activation + batchnorm when supported.
-	•	Framework choices:
-	•	For Jetson: TensorRT.
-	•	For general CPU: ONNX Runtime with MKL/oneDNN.
-	•	For microcontrollers: TFLite Micro, or vendor SDKs.
+1. Memory:
+- Reduce batch size to 1 for inference.
+- Use in-place ops (ReLU inplace=True) but check autograd compatibility.
+- Use torch.utils.checkpoint (gradient checkpointing) only during training to reduce memory.
+2. Compute:
+- Replace nn.Conv2d with depthwise-separable convolutions.
+- Use grouped convolutions if appropriate.
+- Prefer lower-precision (FP16/INT8) arithmetic on supported hardware.
+- IO and pre/post processing:
+3. Move image preprocessing into C++/hardware acceleration when possible.
+- Use fused kernels for activation + batchnorm when supported.
+- Framework choices:
+- For Jetson: TensorRT.
+- For general CPU: ONNX Runtime with MKL/oneDNN.
+- For microcontrollers: TFLite Micro, or vendor SDKs.
 
 ⸻
 
@@ -249,7 +249,7 @@ $$Y_{o,i,j} = \sum_{c=0}^{C_{in}-1}\sum_{u=0}^{K_h-1}\sum_{v=0}^{K_w-1} W_{o,c,u
 
 where s is stride and p_h,p_w are padding. The operation is linear and can be seen as matrix multiplication after im2col:
 
-$$\text{vect}(Y) = W_{\text{mat}} \cdot \operatorname{im2col}(X)$$
+$$\text{vect}(Y) = W_{\text{mat}} \cdot \text{im2col}(X)$$
 
 This viewpoint is useful for low-rank approximations and SVD-based compression.
 
@@ -306,12 +306,12 @@ $$\frac{\partial \text{Dice}}{\partial p_{k}} = \frac{2 g_k(\sum_i p_i + \sum_i 
 (where indices and class dims are expanded appropriately). Numerically, add \epsilon to denominator.
 
 FLOPs, parameter count and memory formulas
-	•	Parameters for a conv layer: \#\text{params} = C_{out}\cdot C_{in}\cdot K_h \cdot K_w \; (+ C_{out}\ \text{bias}).
-	•	Multiply-accumulate FLOPs (approx): for convolution output H’\times W’:
+- Parameters for a conv layer: \#\text{params} = C_{out}\cdot C_{in}\cdot K_h \cdot K_w \; (+ C_{out}\ \text{bias}).
+- Multiply-accumulate FLOPs (approx): for convolution output H’\times W’:
 $$\text{FLOPs} \approx 2 \cdot H’ \cdot W’ \cdot C_{out} \cdot C_{in} \cdot K_h \cdot K_w$$
 (factor 2 counts mul+add; some authors count only multiplications).
-	•	Activation memory during inference: activation footprint per layer = B \cdot C \cdot H \cdot W \cdot \text{bytes_per_element}.
-	•	For embedded: aim to minimize activation footprint (often dominates), and work to reduce max activation size across layers.
+- Activation memory during inference: activation footprint per layer = B \cdot C \cdot H \cdot W \cdot \text{bytes_per_element}.
+- For embedded: aim to minimize activation footprint (often dominates), and work to reduce max activation size across layers.
 
 Quantization error model & low-rank approximation
 
@@ -329,8 +329,8 @@ This reduces parameters and FLOPs: O(k(m+n)) vs O(mn). For conv kernels, flatten
 
 ⸻
 
-Troubleshooting
-	•	CUDA OOM: reduce batch size, use amp=True, or use smaller image size.
-	•	Poor convergence: try learning rate schedule (Cosine / OneCycle), tune weight_decay, use FocalLoss if class imbalance severe.
-	•	Grad-CAM no activation: ensure target layer is a conv layer and model is eval() when generating activations; hooks are attached to the last conv found by SimpleGradCAM.
-	•	ONNX export fails: switch torch.jit.trace if the model uses non-traceable control flow, or refactor non-tensor ops out of forward.
+### Troubleshooting
+- CUDA OOM: reduce batch size, use amp=True, or use smaller image size.
+- Poor convergence: try learning rate schedule (Cosine / OneCycle), tune weight_decay, use FocalLoss if class imbalance severe.
+- Grad-CAM no activation: ensure target layer is a conv layer and model is eval() when generating activations; hooks are attached to the last conv found by SimpleGradCAM.
+- ONNX export fails: switch torch.jit.trace if the model uses non-traceable control flow, or refactor non-tensor ops out of forward.
