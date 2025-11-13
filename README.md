@@ -248,7 +248,7 @@ $$Y_{o,i,j} = \sum_{c=0}^{C_{in}-1}\sum_{u=0}^{K_h-1}\sum_{v=0}^{K_w-1} W_{o,c,u
 
 where s is stride and p_h,p_w are padding. The operation is linear and can be seen as matrix multiplication after im2col:
 
-$$\operatorname{vec}(Y) = W_{\text{mat}} \cdot \operatorname{im2col}(X)$$
+$$\text{vect}(Y) = W_{\text{mat}} \cdot \operatorname{im2col}(X)$$
 
 This viewpoint is useful for low-rank approximations and SVD-based compression.
 
