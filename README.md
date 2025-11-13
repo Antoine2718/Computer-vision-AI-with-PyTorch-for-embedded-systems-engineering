@@ -33,25 +33,33 @@ Lightweight PyTorch utilities and model scaffolding for image classification and
 
 ⸻
 
-Features
-	•	ImageDataset — unified dataset for classification & segmentation; uses Albumentations transforms and returns tensors ready for model.
-	•	Backbone — wrapper around timm backbones to extract feature maps.
-	•	ClassificationHead and SegmentationHeadSimple — small task heads (adaptive pooling + fully connected for classification; lightweight decoder for segmentation).
-	•	LRMModel — lightweight model composition (backbone + head) supporting both tasks.
-	•	FocalLoss and dice functions — focal loss for class imbalance and Dice metric/loss for segmentation.
-	•	Trainer — training/validation loops with AMP (mixed precision), gradient scaling and optional gradient clipping.
-	•	SimpleGradCAM — simple Grad-CAM generator for visualization.
-	•	Checkpoint helpers: save_checkpoint, load_checkpoint.
-	•	example_workflow() — example showing dataset, model, trainer and Grad-CAM usage.
+# Features
+ImageDataset — unified dataset for classification & segmentation; uses Albumentations transforms and returns tensors ready for model.
+
+Backbone — wrapper around timm backbones to extract feature maps.
+
+ClassificationHead and SegmentationHeadSimple — small task heads (adaptive pooling + fully connected for classification; lightweight decoder for segmentation).
+
+LRMModel — lightweight model composition (backbone + head) supporting both tasks.
+
+FocalLoss and dice functions — focal loss for class imbalance and Dice metric/loss for segmentation.
+
+Trainer — training/validation loops with AMP (mixed precision), gradient scaling and optional gradient clipping.
+
+SimpleGradCAM — simple Grad-CAM generator for visualization.
+
+Checkpoint helpers: save_checkpoint, load_checkpoint.
+
+example_workflow() — example showing dataset, model, trainer and Grad-CAM usage.
 
 ⸻
 
 ## Quick start
-	1.	Install dependencies (see next section).
-	2.	Prepare dataset as list of dicts:
-	•	Classification: {'img_path': '/path/to/jpg', 'label': 0}
-	•	Segmentation: {'img_path': '/path/to/jpg', 'mask_path': '/path/to/mask.png'}
-	3.	Import and run example_workflow() or adapt the example code below.
+1.	Install dependencies (see next section).
+2.	Prepare dataset as list of dicts:
+- Classification: {'img_path': '/path/to/jpg', 'label': 0}
+- Segmentation: {'img_path': '/path/to/jpg', 'mask_path': '/path/to/mask.png'}
+3.	Import and run example_workflow() or adapt the example code below.
 
 ⸻
 
