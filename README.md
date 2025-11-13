@@ -242,13 +242,13 @@ Convolutional operator math
 
 Discrete 2D convolution used in CNNs:
 
-For input feature map X \in \mathbb{R}^{C_{in}\times H\times W}, filter W \in \mathbb{R}^{C_{out}\times C_{in}\times K_h \times K_w}, output Y \in \mathbb{R}^{C_{out}\times H’\times W’}:
+For input feature map $$X \in \mathbb{R}^{C_{in}\times H\times W}$$, filter $$W \in \mathbb{R}^{C_{out}\times C_{in}\times K_h \times K_w}$$, output Y \in \mathbb{R}^{C_{out}\times H’\times W’}:$$
 
-Y_{o,i,j} = \sum_{c=0}^{C_{in}-1}\sum_{u=0}^{K_h-1}\sum_{v=0}^{K_w-1} W_{o,c,u,v}\; X_{c,\, i\cdot s + u - p_h,\, j\cdot s + v - p_w}
+$$Y_{o,i,j} = \sum_{c=0}^{C_{in}-1}\sum_{u=0}^{K_h-1}\sum_{v=0}^{K_w-1} W_{o,c,u,v}\; X_{c,\, i\cdot s + u - p_h,\, j\cdot s + v - p_w}$$
 
 where s is stride and p_h,p_w are padding. The operation is linear and can be seen as matrix multiplication after im2col:
 
-\operatorname{vec}(Y) = W_{\text{mat}} \cdot \operatorname{im2col}(X)
+$$\operatorname{vec}(Y) = W_{\text{mat}} \cdot \operatorname{im2col}(X)$$
 
 This viewpoint is useful for low-rank approximations and SVD-based compression.
 
@@ -256,23 +256,23 @@ Backpropagation for conv layers
 
 Let the loss be L. The gradient w.r.t. filter W is convolution of input with output-gradients:
 
-\frac{\partial L}{\partial W_{o,c,u,v}} = \sum_{i,j} \frac{\partial L}{\partial Y_{o,i,j}} \cdot X_{c,\, i\cdot s + u - p_h,\, j\cdot s + v - p_w}
+$$\frac{\partial L}{\partial W_{o,c,u,v}} = \sum_{i,j} \frac{\partial L}{\partial Y_{o,i,j}} \cdot X_{c,\, i\cdot s + u - p_h,\, j\cdot s + v - p_w}$$
 
 and w.r.t. input:
 
-\frac{\partial L}{\partial X_{c,x,y}} = \sum_{o}\sum_{u,v} \frac{\partial L}{\partial Y_{o,i,j}} \cdot W_{o,c,u’,v’}
+$$\frac{\partial L}{\partial X_{c,x,y}} = \sum_{o}\sum_{u,v} \frac{\partial L}{\partial Y_{o,i,j}} \cdot W_{o,c,u’,v’}$$
 
 with index arithmetic for correct flipping/reverse.
 
 Softmax + Cross-entropy gradients
 
-Given logits \mathbf{z}\in\mathbb{R}^C, softmax
+Given logits $\mathbf{z}\in\mathbb{R}^C$, softmax
 
-\sigma(\mathbf{z})i = \frac{\exp(z_i)}{\sum{j}\exp(z_j)}
+$$\sigma(\mathbf{z})i = \frac{\exp(z_i)}{\sum{j}\exp(z_j)}$$
 
-Cross-entropy for one-hot target y is \ell = -\sum_i y_i \log \sigma(\mathbf{z})i = -\log \sigma(\mathbf{z}){t} for target class t. Gradient w.r.t. logits:
+Cross-entropy for one-hot target y is $$\ell = -\sum_i y_i \log \sigma(\mathbf{z})i = -\log \sigma(\mathbf{z}){t} $$ for target class t. Gradient w.r.t. logits:
 
-\frac{\partial \ell}{\partial z_i} = \sigma(\mathbf{z})_i - y_i
+$$\frac{\partial \ell}{\partial z_i} = \sigma(\mathbf{z})_i - y_i$$
 
 This compact form is the reason numerically-stable fused softmax-crossentropy kernels are important on embedded devices.
 
@@ -282,32 +282,32 @@ Focal loss (for classification, binary/multiclass variant) modifies cross-entrop
 
 For binary case with probability p for correct class:
 
-\text{FL}(p) = -\alpha (1-p)^\gamma \log p
+$$\text{FL}(p) = -\alpha (1-p)^\gamma \log p$$
 
-Gradient w.r.t. logit z (where p = \sigma(z)):
+Gradient w.r.t. logit z (where $p = \sigma(z)$):
 
-[\ \frac{d \text{FL}}{dz} = -\alpha \left[ \gamma (1-p)^{\gamma-1}(-\tfrac{dp}{dz}) \log p + (1-p)^\gamma \frac{1}{p}\frac{dp}{dz} \right] \]
+$$ \frac{d \text{FL}}{dz} = -\alpha \left[ \gamma (1-p)^{\gamma-1}(-\tfrac{dp}{dz}) \log p + (1-p)^\gamma \frac{1}{p}\frac{dp}{dz} \right] $$
 
-Using \frac{dp}{dz} = p(1-p), we simplify to a form used in implementations. The multiplicative term (1-p)^\gamma downweights easy examples (where p\rightarrow 1).
+Using $\frac{dp}{dz} = p(1-p)$, we simplify to a form used in implementations. The multiplicative term $(1-p)^\gamma$ downweights easy examples (where p\rightarrow 1).
 
-The focal-modulation effectively rescales the gradient magnitude by (1-p)^\gamma, changing the learning dynamics to prioritize hard examples — valuable when class imbalance is severe.
+The focal-modulation effectively rescales the gradient magnitude by $(1-p)^\gamma$, changing the learning dynamics to prioritize hard examples — valuable when class imbalance is severe.
 
 Dice loss and differentiability
 
 Dice coefficient for two sets (or soft predictions) for class c:
 
-\text{Dice}c = \frac{2 \sum{i} p_{i,c} g_{i,c} + \epsilon}{\sum_{i} p_{i,c} + \sum_{i} g_{i,c} + \epsilon}
+$$\text{Dice}c = \frac{2 \sum{i} p_{i,c} g_{i,c} + \epsilon}{\sum_{i} p_{i,c} + \sum_{i} g_{i,c} + \epsilon}$$
 
 Dice loss often written as 1 - \text{Dice}. Differentiable if p_{i,c} are soft predictions (sigmoid/softmax outputs). Gradient requires quotient rule:
 
-\frac{\partial \text{Dice}}{\partial p_{k}} = \frac{2 g_k(\sum_i p_i + \sum_i g_i) - 2 \sum_i p_i g_i}{(\sum_i p_i + \sum_i g_i)^2}
+$$\frac{\partial \text{Dice}}{\partial p_{k}} = \frac{2 g_k(\sum_i p_i + \sum_i g_i) - 2 \sum_i p_i g_i}{(\sum_i p_i + \sum_i g_i)^2}$$
 
 (where indices and class dims are expanded appropriately). Numerically, add \epsilon to denominator.
 
 FLOPs, parameter count and memory formulas
 	•	Parameters for a conv layer: \#\text{params} = C_{out}\cdot C_{in}\cdot K_h \cdot K_w \; (+ C_{out}\ \text{bias}).
 	•	Multiply-accumulate FLOPs (approx): for convolution output H’\times W’:
-\text{FLOPs} \approx 2 \cdot H’ \cdot W’ \cdot C_{out} \cdot C_{in} \cdot K_h \cdot K_w
+$$\text{FLOPs} \approx 2 \cdot H’ \cdot W’ \cdot C_{out} \cdot C_{in} \cdot K_h \cdot K_w$$
 (factor 2 counts mul+add; some authors count only multiplications).
 	•	Activation memory during inference: activation footprint per layer = B \cdot C \cdot H \cdot W \cdot \text{bytes_per_element}.
 	•	For embedded: aim to minimize activation footprint (often dominates), and work to reduce max activation size across layers.
@@ -316,7 +316,7 @@ Quantization error model & low-rank approximation
 
 Uniform symmetric quantization mapping real value x to integer q with scale s:
 
-q = \text{round}\left(\frac{x}{s}\right),\quad \hat{x} = s q
+$$ q = \text{round}\left(\frac{x}{s}\right),\quad \hat{x} = s q$$
 
 Quantization error e=x-\hat{x} can be modeled as additive noise with variance \sigma_e^2 \approx s^2/12 (for uniformly-distributed rounding errors). The effect on downstream output can be propagated linearly using the Jacobian J of the network: output covariance approx J \Sigma_e J^\top.
 
