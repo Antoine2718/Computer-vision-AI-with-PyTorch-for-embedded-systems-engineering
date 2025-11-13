@@ -1,6 +1,6 @@
 # Computer vision AI engineering using PyTorch
 
-### ⚠️🖥️⚙️ This model has the advantage of being easy to install and relatively energy efficient, and therefore being particularly suitable for embedded systems.
+### ⚠️🖥️⚙️ This model has the advantage of being easy to install and relatively energy efficient 🔋, and therefore being particularly suitable for embedded systems.
 
 This model provides a configurable pipeline for classification and segmentation. It illustrates all the blocks: data, model backbone, modular heads, training loop with amp, validation, checkpoint backup, and inference and explainability functions (Simple Grad-CAM).
 
@@ -14,29 +14,22 @@ Lightweight PyTorch utilities and model scaffolding for image classification and
 
 ⸻
 
-Table of contents
-	•	Features
-	•	Quick start
-	•	Installation
-	•	Usage (English: full usage notice)
-	•	Importing the library
-	•	Dataset preparation
-	•	Creating a model (classification / segmentation)
-	•	Training example
-	•	Validation / inference example
-	•	Visualizing with Grad-CAM
-	•	API reference (brief)
-	•	Embedded deployment guidance
-	•	Optimizations for embedded systems
-	•	Advanced mathematical appendix
-	•	Convolutional operator math
-	•	Backpropagation for conv layers
-	•	Softmax + Cross-entropy gradients
-	•	Focal loss derivation and gradient
-	•	Dice loss and differentiability
-	•	FLOPs, parameter count and memory formulas
-	•	Quantization error model & low-rank approximation
-	•	Troubleshooting
+## Table of content
+1. Features
+2. Quick start
+3. Installation
+4. Usage
+5. Importing the library
+6. Dataset preparation
+7. Creating a model (classification / segmentation)
+8. Training example
+9. Validation / inference example
+10. Visualizing with Grad-CAM
+11. API reference (brief)
+12. Embedded deployment guidance
+13. Optimizations for embedded systems
+14. Advanced mathematical appendix
+15. Troubleshooting
 
 ⸻
 
