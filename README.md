@@ -1,4 +1,4 @@
-# Computer vision AI with PyTorch engineering
+# Computer vision AI engineering using PyTorch
 
 ### ⚠️🖥️⚙️ This model has the advantage of being easy to install and relatively energy efficient, and therefore being particularly suitable for embedded systems.
 
