@@ -322,7 +322,7 @@ Quantization error e=x-\hat{x} can be modeled as additive noise with variance \s
 
 Low-rank approximation: represent large weight matrix W\in\mathbb{R}^{m\times n} by truncated SVD:
 
-[\ W \approx U_k \Sigma_k V_k^\top, \quad k \ll \min(m,n) \]
+$$ W \approx U_k \Sigma_k V_k^\top, \quad k \ll \min(m,n) $$
 
 This reduces parameters and FLOPs: O(k(m+n)) vs O(mn). For conv kernels, flattening spatial and input dims yields matrices amenable to SVD or tensor decompositions (CP/Tucker).
 
